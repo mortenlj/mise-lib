@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# [MISE] description="Run Python formatter"
 # [MISE] hide=true
 if [[ -e poetry.lock ]]; then
   poetry run pytest
