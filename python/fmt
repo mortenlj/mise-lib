@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# [MISE] description="Run Python formatter"
+# [MISE] hide=true
+# [MISE] tools={ruff="latest"}
+ruff format
