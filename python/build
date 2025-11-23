@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# [MISE] hide=true
+if [[ -e poetry.lock ]]; then
+  poetry build
+elif [[ -e uv.lock ]]; then
+  uv build
+fi

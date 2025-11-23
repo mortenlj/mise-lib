@@ -31,14 +31,13 @@ Temporary Items
 .pytest_cache
 *.pyc
 distribute*
-build
-dist
+/build
+/dist
 pytest_runner*.egg
 __pycache__
 
 # JVM
 .gradle
-build
 
 # Rust
 target
