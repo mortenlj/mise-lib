@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+# [MISE] hide=true
+# [MISE] depends=["rust:setup"]
+# [USAGE] arg "[target]" help="Target triple" {
+# [USAGE]   choices "armv7-unknown-linux-gnueabihf" "x86_64-unknown-linux-gnu" "aarch64-unknown-linux-gnu"
+# [USAGE] }
+# [USAGE] flag "--release" help="Build release mode"
+cargo build ${usage_target:+--target} ${usage_target} ${usage_release:+--release}

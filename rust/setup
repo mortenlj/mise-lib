@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+# [MISE] hide=true
+# [MISE] sources=["Cargo.toml", "Cargo.lock"]
+rustup update
+rustup target add armv7-unknown-linux-gnueabihf x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+rustup component add clippy
+cargo binstall --no-confirm --no-cleanup cargo-nextest

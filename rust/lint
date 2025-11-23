@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+# [MISE] hide=true
+# [MISE] depends=["rust:setup"]
+cargo clippy
