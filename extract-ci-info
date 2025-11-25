@@ -42,9 +42,6 @@ def ci_tasks(mise_config):
 
 
 def run_publish(mise_config):
-    if "publish" not in mise_config["tasks"]:
-        print("No publish task")
-        return False
     p = subprocess.run(["git", "rev-parse", "--symbolic-full-name", "HEAD"], capture_output=True, text=True)
     rev = ("".join(p.stdout)).strip()
     if "refs/heads/main" != rev:
