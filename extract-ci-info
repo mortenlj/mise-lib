@@ -17,16 +17,51 @@ class Output:
             self._fobj = open(output, "a")
         else:
             self._fobj = StringIO()
-        self._outputs = []
 
-    def add_output(self, name, value):
-        self._outputs.append(f"{name}={json.dumps(value)}\n")
-
-    def write(self):
+    def write(self, mise_config):
         print("Creating outputs")
-        for line in self._outputs:
+        for name in dir(self):
+            if name.startswith("_"):
+                continue
+            if name == "write":
+                continue
+
+            output_name = name.replace("_", "-")
+            value = getattr(self, name)(mise_config)
+            line = f"{output_name}={json.dumps(value)}\n"
             self._fobj.write(line)
             sys.stdout.write(line)
+
+    def ci_tasks(self, mise_config):
+        return mise_config["tasks"]["ci"]["depends"]
+
+    def run_publish(self, mise_config):
+        p = subprocess.run(["git", "rev-parse", "--symbolic-full-name", "HEAD"], capture_output=True, text=True)
+        rev = ("".join(p.stdout)).strip()
+        if "refs/heads/main" != rev:
+            print(f"Not on main branch, rev is {rev!r}")
+            return False
+        return True
+
+    def artifacts(self, mise_config):
+        build_config = mise_config["tasks"]["build"]
+        return "\n".join(build_config.get("outputs", []))
+
+    def _version(self, mise_config, clean=False):
+        vars = mise_config.get("vars", {})
+        major = vars.get("major_version", "0")
+        minor = datetime.now().strftime("%Y%m%d%H%M")
+        if clean:
+            return f"{major}.{minor}"
+        p = subprocess.run(["git", "describe", "--always", "--dirty", "--exclude", "*"], capture_output=True, text=True)
+        local = ("".join(p.stdout)).strip()
+        return f"{major}.{minor}+{local}"
+
+    def version(self, mise_config):
+        return self._version(mise_config, clean=False)
+
+    def clean_version(self, mise_config):
+        return self._version(mise_config, clean=True)
 
 
 def load_mise():
@@ -37,45 +72,11 @@ def load_mise():
         return tomllib.load(fobj)
 
 
-def ci_tasks(mise_config):
-    return mise_config["tasks"]["ci"]["depends"]
-
-
-def run_publish(mise_config):
-    p = subprocess.run(["git", "rev-parse", "--symbolic-full-name", "HEAD"], capture_output=True, text=True)
-    rev = ("".join(p.stdout)).strip()
-    if "refs/heads/main" != rev:
-        print(f"Not on main branch, rev is {rev!r}")
-        return False
-    return True
-
-
-def artifacts(mise_config):
-    build_config = mise_config["tasks"]["build"]
-    return "\n".join(build_config.get("outputs", []))
-
-
-def version(mise_config, clean):
-    vars = mise_config.get("vars", {})
-    major = vars.get("major_version", "0")
-    minor = datetime.now().strftime("%Y%m%d%H%M")
-    if clean:
-        return f"{major}.{minor}"
-    p = subprocess.run(["git","describe","--always","--dirty","--exclude","*"], capture_output=True, text=True)
-    local = ("".join(p.stdout)).strip()
-    return f"{major}.{minor}+{local}"
-
-
 def main():
     print("Extracting CI info")
     mise_config = load_mise()
     output = Output()
-    output.add_output("ci-tasks", ci_tasks(mise_config))
-    output.add_output("run-publish", run_publish(mise_config))
-    output.add_output("artifacts", artifacts(mise_config))
-    output.add_output("version", version(mise_config, False))
-    output.add_output("clean_version", version(mise_config, True))
-    output.write()
+    output.write(mise_config)
 
 
 if __name__ == "__main__":
