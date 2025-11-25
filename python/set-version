@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+# [MISE] hide=true
+# [USAGE] arg "[version]" help="New version"
+import os
+import re
+import shutil
+import tempfile
+import tomllib
+
+
+def load_pyproject():
+    root = os.getenv("MISE_CONFIG_ROOT", ".")
+    pyproject_path = os.path.join(root, "pyproject.toml")
+    with open(pyproject_path, "rb") as fobj:
+        return tomllib.load(fobj)
+
+
+def save_pyproject(project):
+    root = os.getenv("MISE_CONFIG_ROOT", ".")
+    pyproject_path = os.path.join(root, "pyproject.toml")
+    with open(pyproject_path, "wb") as fobj:
+        return tomllib
+
+
+def main(version):
+    root = os.getenv("MISE_CONFIG_ROOT", ".")
+    pyproject_path = os.path.join(root, "pyproject.toml")
+    fd, tmppath = tempfile.mkstemp(".toml", "pyproject", text=True)
+    with open(pyproject_path, "r") as src:
+        with os.fdopen(fd, "w") as dst:
+            for line in src:
+                if re.match(r"version = .*", line):
+                    dst.write(f"version = \"{version}\"\n")
+                else:
+                    dst.write(line)
+    shutil.move(tmppath, pyproject_path)
+
+
+if __name__ == '__main__':
+    version = os.getenv("usage_version")
+    if not version:
+        raise Exception("No version specified")
+    main(version)
