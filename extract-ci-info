@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # [MISE] description="Extract CI info"
 # [MISE] hide=true
+import glob
 import json
 import os
+import re
 import subprocess
 import sys
 import tomllib
@@ -17,6 +19,7 @@ class Output:
             self._fobj = open(output, "a")
         else:
             self._fobj = StringIO()
+        self._build_id = datetime.now().strftime("%Y%m%d%H%M")
 
     def write(self, mise_config):
         print("Creating outputs")
@@ -35,9 +38,26 @@ class Output:
     def ci_tasks(self, mise_config):
         return mise_config["tasks"]["ci"]["depends"]
 
+    def _has_source_changes(self, mise_config):
+        # Get sha of last tag
+        base_sha = git(["git", "rev-list", "--tags", "--max-count=1"])
+        head_sha = git(["git", "rev-parse", "HEAD"])
+        changed_files = git(["git", "diff", "--name-only", base_sha, head_sha])
+        sources = mise_config["tasks"]["build"]["sources"]
+        sources.append(".github/workflows/*.y*ml")
+        for src in sources:
+            pattern = re.compile(glob.translate(src, recursive=True))
+            for f in changed_files:
+                if pattern.match(f):
+                    return True
+        return False
+
     def run_publish(self, mise_config):
-        p = subprocess.run(["git", "rev-parse", "--symbolic-full-name", "HEAD"], capture_output=True, text=True)
-        rev = ("".join(p.stdout)).strip()
+        if not self._has_source_changes(mise_config):
+            print("No changes to sources since last tag, no need to publish")
+            return False
+        result = git(["git", "rev-parse", "--symbolic-full-name", "HEAD"])
+        rev = ("".join(result)).strip()
         if "refs/heads/main" != rev:
             print(f"Not on main branch, rev is {rev!r}")
             return False
@@ -50,18 +70,22 @@ class Output:
     def _version(self, mise_config, clean=False):
         vars = mise_config.get("vars", {})
         major = vars.get("major_version", "0")
-        minor = datetime.now().strftime("%Y%m%d%H%M")
         if clean:
-            return f"{major}.{minor}"
-        p = subprocess.run(["git", "describe", "--always", "--dirty", "--exclude", "*"], capture_output=True, text=True)
-        local = ("".join(p.stdout)).strip()
-        return f"{major}.{minor}+{local}"
+            return f"{major}.{self._build_id}"
+        result = git(["git", "describe", "--always", "--dirty", "--exclude", "*"])
+        local = ("".join(result)).strip()
+        return f"{major}.{self._build_id}+{local}"
 
     def version(self, mise_config):
         return self._version(mise_config, clean=False)
 
     def clean_version(self, mise_config):
         return self._version(mise_config, clean=True)
+
+
+def git(cmd):
+    p = subprocess.run(cmd, capture_output=True, text=True)
+    return p.stdout
 
 
 def load_mise():
