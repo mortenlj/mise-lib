@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import tomllib
+from datetime import datetime
 from io import StringIO
 
 
@@ -30,7 +31,7 @@ class Output:
 
 def load_mise():
     """Load mise.toml"""
-    root = os.getenv("MISE_CONFIG_ROOT")
+    root = os.getenv("MISE_CONFIG_ROOT", ".")
     mise_path = os.path.join(root, "mise.toml")
     with open(mise_path, "rb") as fobj:
         return tomllib.load(fobj)
@@ -57,6 +58,15 @@ def artifacts(mise_config):
     return "\n".join(build_config.get("outputs", []))
 
 
+def version(mise_config):
+    vars = mise_config.get("vars", {})
+    major = vars.get("major_version", "0")
+    minor = datetime.now().strftime("%Y%m%d%H%M")
+    p = subprocess.run(["git","describe","--always","--dirty","--exclude","*"], capture_output=True, text=True)
+    local = ("".join(p.stdout)).strip()
+    return f"{major}.{minor}+{local}"
+
+
 def main():
     print("Extracting CI info")
     mise_config = load_mise()
@@ -64,6 +74,7 @@ def main():
     output.add_output("ci-tasks", ci_tasks(mise_config))
     output.add_output("run-publish", run_publish(mise_config))
     output.add_output("artifacts", artifacts(mise_config))
+    output.add_output("version", version(mise_config))
     output.write()
 
 
