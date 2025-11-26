@@ -42,6 +42,9 @@ class Output:
         return mise_config["tasks"]["ci"]["depends"]
 
     def _has_source_changes(self, mise_config):
+        depth = int(git(["git","rev-list","--count","--all"]))
+        if depth == 1:
+            LOG.warning("To correctly determine if source files has been changed, you need to fetch enough git history. Consider setting 'fetch-depth: 0' in your checkout action.")
         base_sha = git(["git", "rev-list", "--tags", "--max-count=1"])
         LOG.debug("Last tag has sha %s", base_sha)
         head_sha = git(["git", "rev-parse", "HEAD"])
@@ -60,13 +63,13 @@ class Output:
         return False
 
     def run_publish(self, mise_config):
-        if not self._has_source_changes(mise_config):
-            LOG.info("No changes to sources since last tag, no need to publish")
-            return False
         result = git(["git", "rev-parse", "--symbolic-full-name", "HEAD"])
         rev = ("".join(result)).strip()
         if "refs/heads/main" != rev:
             LOG.info(f"Not on main branch, rev is {rev!r}")
+            return False
+        if not self._has_source_changes(mise_config):
+            LOG.info("No changes to sources since last tag, no need to publish")
             return False
         return True
 
