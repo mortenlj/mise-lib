@@ -46,9 +46,9 @@ class Output:
         if depth == 1:
             LOG.warning("To correctly determine if source files has been changed, you need to fetch enough git history.")
             LOG.warning("Consider setting 'fetch-depth: 0' in your checkout action if running in GitHub Actions.")
-        base_sha = git(["git", "rev-list", "--tags", "--max-count=1"])
+        base_sha = git(["git", "rev-list", "--tags", "--max-count=1"]).strip()
         LOG.debug("Last tag has sha %r", base_sha)
-        head_sha = git(["git", "rev-parse", "HEAD"])
+        head_sha = git(["git", "rev-parse", "HEAD"]).strip()
         LOG.debug("Head has sha %r", head_sha)
         changed_files = git(["git", "diff", "--name-only", base_sha, head_sha])
         LOG.debug("Changed files: %s", pformat(changed_files))
