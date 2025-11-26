@@ -94,7 +94,8 @@ class Output:
 
 
 def git(cmd):
-    p = subprocess.run(cmd, capture_output=True, text=True)
+    root = os.getenv("MISE_CONFIG_ROOT", ".")
+    p = subprocess.run(cmd, capture_output=True, text=True, check=True, cwd=root)
     return p.stdout
 
 
