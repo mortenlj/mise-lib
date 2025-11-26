@@ -42,13 +42,14 @@ class Output:
         return mise_config["tasks"]["ci"]["depends"]
 
     def _has_source_changes(self, mise_config):
-        depth = int(git(["git","rev-list","--count","--all"]))
+        depth = int(git(["git", "rev-list", "--count", "--all"]))
         if depth == 1:
-            LOG.warning("To correctly determine if source files has been changed, you need to fetch enough git history. Consider setting 'fetch-depth: 0' in your checkout action.")
+            LOG.warning("To correctly determine if source files has been changed, you need to fetch enough git history.")
+            LOG.warning("Consider setting 'fetch-depth: 0' in your checkout action if running in GitHub Actions.")
         base_sha = git(["git", "rev-list", "--tags", "--max-count=1"])
-        LOG.debug("Last tag has sha %s", base_sha)
+        LOG.debug("Last tag has sha %r", base_sha)
         head_sha = git(["git", "rev-parse", "HEAD"])
-        LOG.debug("Head has sha %s", head_sha)
+        LOG.debug("Head has sha %r", head_sha)
         changed_files = git(["git", "diff", "--name-only", base_sha, head_sha])
         LOG.debug("Changed files: %s", pformat(changed_files))
         sources = mise_config["tasks"]["build"]["sources"]
@@ -95,8 +96,13 @@ class Output:
 
 def git(cmd):
     root = os.getenv("MISE_CONFIG_ROOT", ".")
-    p = subprocess.run(cmd, capture_output=True, text=True, check=True, cwd=root)
-    return p.stdout
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, check=True, cwd=root)
+        return p.stdout
+    except subprocess.CalledProcessError as e:
+        LOG.error("%s", str(e))
+        LOG.debug("StdOut: %s", pformat(e.stdout))
+        LOG.debug("StdErr: %s", pformat(e.stderr))
 
 
 def load_mise():
