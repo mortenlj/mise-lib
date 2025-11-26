@@ -50,7 +50,7 @@ class Output:
         LOG.debug("Last tag has sha %r", base_sha)
         head_sha = git(["git", "rev-parse", "HEAD"]).strip()
         LOG.debug("Head has sha %r", head_sha)
-        changed_files = git(["git", "diff", "--name-only", base_sha, head_sha])
+        changed_files = git(["git", "diff", "--name-only", base_sha, head_sha]).splitlines(keepends=False)
         LOG.debug("Changed files: %s", pformat(changed_files))
         sources = mise_config["tasks"]["build"]["sources"]
         sources.append(".github/workflows/*.y*ml")
