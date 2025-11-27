@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # [MISE] description="Extract CI info"
 # [MISE] hide=true
-# [MISE] tools={python>="3.13"}
+# [MISE] tools={python="latest"}
 import glob
 import json
 import logging
