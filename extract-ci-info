@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import subprocess
 import tomllib
 from datetime import datetime
@@ -36,10 +37,29 @@ class Output:
             value = getattr(self, name)(mise_config)
             line = f"{output_name}={json.dumps(value)}\n"
             self._fobj.write(line)
-            LOG.debug(line.strip())
+            LOG.info(line.strip())
+
+    def _task_dependencies(self, task_name):
+        task_info = mise("tasks", "info", task_name)
+        if task_info["run"] or task_info["file"]:
+            LOG.debug("Task %s is a leaf", task_name)
+            return {task_name}
+        deps = set()
+        for dep in task_info["depends"]:
+            if isinstance(dep, str):
+                dep_name = dep
+                sub_deps = self._task_dependencies(dep_name)
+                deps.update(sub_deps)
+            else:
+                LOG.debug("Adding task %r", dep)
+                deps.add(shlex.join(dep))
+        return list(deps)
 
     def ci_tasks(self, mise_config):
-        return mise_config["tasks"]["ci"]["depends"]
+        return self._task_dependencies("ci")
+
+    def release_build_tasks(self, mise_config):
+        return self._task_dependencies("release-build")
 
     def _has_source_changes(self, mise_config):
         depth = int(git(["git", "rev-list", "--count", "--all"]))
@@ -99,6 +119,21 @@ def git(cmd):
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, check=True, cwd=root)
         return p.stdout
+    except subprocess.CalledProcessError as e:
+        LOG.error("%s", str(e))
+        LOG.debug("StdOut: %s", pformat(e.stdout))
+        LOG.debug("StdErr: %s", pformat(e.stderr))
+
+
+def mise(*args):
+    cmd = ["mise"]
+    cmd.extend(args)
+    root = os.getenv("MISE_CONFIG_ROOT", ".")
+    try:
+        if "--json" not in cmd:
+            cmd.append("--json")
+        p = subprocess.run(cmd, capture_output=True, text=True, check=True, cwd=root)
+        return json.loads(p.stdout)
     except subprocess.CalledProcessError as e:
         LOG.error("%s", str(e))
         LOG.debug("StdOut: %s", pformat(e.stdout))
