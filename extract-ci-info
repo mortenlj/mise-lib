@@ -73,7 +73,7 @@ class Output:
         LOG.debug("Head has sha %r", head_sha)
         changed_files = git(["git", "diff", "--name-only", base_sha, head_sha]).splitlines(keepends=False)
         LOG.debug("Changed files: %s", pformat(changed_files))
-        sources = mise_config["tasks"]["build"]["sources"]
+        sources = mise_config["tasks"]["release-build"]["sources"]
         sources.append(".github/workflows/*.y*ml")
         for src in sources:
             pattern = re.compile(glob.translate(src, recursive=True))
@@ -96,7 +96,7 @@ class Output:
         return True
 
     def artifacts(self, mise_config):
-        build_config = mise_config["tasks"]["build"]
+        build_config = mise_config["tasks"]["release-build"]
         return "\n".join(build_config.get("outputs", []))
 
     def _version(self, mise_config, clean=False):
