@@ -9,6 +9,11 @@
 set -o errexit
 set -o pipefail
 
+SUDO=''
+if (( $EUID != 0 )); then
+    SUDO='sudo'
+fi
+
 function install_if_needed {
   local bin
   local pkg
@@ -16,7 +21,7 @@ function install_if_needed {
   pkg=${2-${bin}}
   if ! command -v ${bin}; then
     echo "Needs to install ${pkg} ..."
-    sudo apt-get --yes install "${pkg}"
+    ${SUDO} apt-get --yes install "${pkg}"
   fi
 }
 
