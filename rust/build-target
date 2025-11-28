@@ -9,6 +9,36 @@
 set -o errexit
 set -o pipefail
 
+function install_and_return_path {
+  local bin
+  local pkg
+  bin=${1?}
+  pkg=${2-${bin}}
+  path=$(command -v ${bin})
+  if [[ ! -x "${path}" ]]; then
+    echo "Needs to install ${pkg} ..." >&2
+    sudo apt-get --yes install ${pkg} >&2
+  fi
+  path=$(command -v ${bin})
+  echo ${path}
+}
+
+# shellcheck disable=SC2154
+case ${usage_target} in
+  armv7-unknown-linux-gnueabihf)
+    CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER="$(install_and_return_path "arm-linux-gnueabihf-gcc" "gcc-arm-linux-gnueabihf")"
+    export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER
+    ;;
+  aarch64-unknown-linux-gnu)
+    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$(install_and_return_path "aarch64-linux-gnu-gcc" "gcc-aarch64-linux-gnu")"
+    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER
+    ;;
+esac
+
+install_and_return_path cmake > /dev/null
+install_and_return_path musl-gcc musl-tools > /dev/null
+
+# shellcheck disable=SC2086
 cargo build ${usage_target:+--target} ${usage_target} ${usage_release:+--release}
 
 if [[ "${usage_target}" != "" ]]; then
