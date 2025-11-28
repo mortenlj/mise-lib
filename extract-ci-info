@@ -2,6 +2,7 @@
 # [MISE] description="Extract CI info"
 # [MISE] hide=true
 # [MISE] tools={python="latest"}
+import dataclasses
 import glob
 import json
 import logging
@@ -10,11 +11,19 @@ import re
 import shlex
 import subprocess
 import tomllib
+from dataclasses import is_dataclass
 from datetime import datetime
 from io import StringIO
 from pprint import pformat
+from typing import List, Set
 
 LOG = logging.getLogger(__name__)
+
+
+@dataclasses.dataclass(frozen=True, eq=True)
+class Task:
+    name: str
+    cmd: str
 
 
 class Output:
@@ -36,36 +45,36 @@ class Output:
 
             output_name = name.replace("_", "-")
             value = getattr(self, name)(mise_config)
-            line = f"{output_name}={json.dumps(value)}\n"
+            line = f"{output_name}={json.dumps(value, default=encode_dataclass)}\n"
             self._fobj.write(line)
             LOG.info(line.strip())
 
-    def _task_dependencies(self, task_name):
+    def _task_dependencies(self, task_name) -> Set[Task]:
         task_info = mise("tasks", "info", task_name)
         if task_info["run"] or task_info["file"]:
             LOG.debug("Task %s is a leaf", task_name)
-            return {task_name}
+            return {Task(slugify(task_name), task_name)}
         deps = set()
         for dep in task_info["depends"]:
             if isinstance(dep, str):
-                dep_name = dep
-                sub_deps = self._task_dependencies(dep_name)
+                sub_deps = self._task_dependencies(dep)
                 deps.update(sub_deps)
             else:
                 LOG.debug("Adding task %r", dep)
-                deps.add(shlex.join(dep))
-        return list(deps)
+                cmd = shlex.join(dep)
+                deps.add(Task(slugify(cmd), cmd))
+        return deps
 
-    def ci_tasks(self, mise_config):
-        return self._task_dependencies("ci")
+    def ci_tasks(self, mise_config) -> List[Task]:
+        return list(self._task_dependencies("ci"))
 
-    def release_build_tasks(self, mise_config):
-        return self._task_dependencies("release-build")
+    def release_build_tasks(self, mise_config) -> List[Task]:
+        return list(self._task_dependencies("release-build"))
 
     def _has_source_changes(self, mise_config):
         depth = int(git(["git", "rev-list", "--count", "--all"]))
         if depth == 1:
-            LOG.warning("To correctly determine if source files has been changed, you need to fetch enough git history.")
+            LOG.warning("To correctly determine if source files has been changed, you need to fetch all git history.")
             LOG.warning("Consider setting 'fetch-depth: 0' in your checkout action if running in GitHub Actions.")
         base_sha = git(["git", "rev-list", "--tags", "--max-count=1"]).strip()
         LOG.debug("Last tag has sha %r", base_sha)
@@ -139,6 +148,19 @@ def mise(*args):
         LOG.error("%s", str(e))
         LOG.debug("StdOut: %s", pformat(e.stdout))
         LOG.debug("StdErr: %s", pformat(e.stderr))
+
+
+def encode_dataclass(value):
+    if is_dataclass(value):
+        return dataclasses.asdict(value)
+    return value
+
+
+def slugify(text):
+    slug = text.lower()
+    slug = re.sub(r'[^a-zæøå0-9]+', '-', slug).strip('-')
+    slug = re.sub(r'[-]+', '-', slug)
+    return slug
 
 
 def load_mise():
