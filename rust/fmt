@@ -1,4 +1,8 @@
 #!/usr/bin/bash
 # [MISE] hide=true
 # [MISE] depends=["rust:setup"]
+
+set -o errexit
+set -o pipefail
+
 cargo fmt --all

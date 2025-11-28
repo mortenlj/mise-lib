@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # [MISE] hide=true
+
+set -o errexit
+set -o pipefail
+
 if [[ -e poetry.lock ]]; then
   poetry run pytest
 elif [[ -e uv.lock ]]; then
