@@ -13,8 +13,8 @@ tag_name=$(mktemp --dry-run mise-docker-XXXXXXX --suffix=":10h" | tr '[:upper:]'
 
 docker build --file "${MISE_TASK_DIR}/Dockerfile.task" \
   --build-arg task="${command}" \
-  --build-arg MISE_LIB_VERSION="${MISE_LIB_VERSION}" \
-  --build-arg MISE_LIB_CLEAN_VERSION="${MISE_LIB_CLEAN_VERSION}" \
+  --build-arg MORTENLJ_MISE_LIB_VERSION="${MORTENLJ_MISE_LIB_VERSION}" \
+  --build-arg MORTENLJ_MISE_LIB_CLEAN_VERSION="${MORTENLJ_MISE_LIB_CLEAN_VERSION}" \
   --tag "${tag_name}" \
   .
 

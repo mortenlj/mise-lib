@@ -45,7 +45,7 @@ cargo build ${usage_target:+--target} ${usage_target} ${usage_release:+--release
 if [[ "${usage_target}" != "" ]]; then
   for f in "target/${usage_target}/release/"*; do
     if [[ -x "${f}" && -f "${f}" ]]; then
-      new_name="target/release/$(insert_version_target "$(basename "${f}")" "${MISE_LIB_VERSION:-0.0}" "${usage_target}")"
+      new_name="target/release/$(insert_version_target "$(basename "${f}")" "${MORTENLJ_MISE_LIB_VERSION:-0.0}" "${usage_target}")"
       echo "Copying '${f}' to '${new_name}'"
       cp "${f}" "${new_name}"
     fi
