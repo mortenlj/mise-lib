@@ -6,6 +6,7 @@ COPY .config ./.config
 COPY mise.toml ./mise.toml
 RUN mise trust mise.toml
 
+RUN mise install
 RUN mise run docker-prepare || true
 
 COPY . ./
