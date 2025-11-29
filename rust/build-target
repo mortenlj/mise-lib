@@ -15,14 +15,30 @@ if (( $EUID != 0 )); then
 fi
 
 function install_if_needed {
-  local bin
-  local pkg
-  bin=${1?}
-  pkg=${2-${bin}}
-  if ! command -v ${bin}; then
+  local bin=${1?}
+  local pkg=${2-${bin}}
+  if ! command -v "${bin}"; then
     echo "Needs to install ${pkg} ..."
     ${SUDO} apt-get --yes install "${pkg}"
   fi
+}
+
+# Inserts version and target into filename before extension or at end if no extension
+insert_version_target() {
+  local filename="${1?}"
+  local version="${2?}"
+  local target="${3?}"
+  local base ext new_name
+
+  # Extract base and extension
+  if [[ "${filename}" =~ ^(.+)\.(.+)$ ]]; then
+    base="${BASH_REMATCH[1]}"
+    ext=".${BASH_REMATCH[2]}"
+    new_name="${base}.${version}.${target}${ext}"
+  else
+    new_name="${filename}.${version}.${target}"
+  fi
+  echo "${new_name}"
 }
 
 # shellcheck disable=SC2154
@@ -49,7 +65,7 @@ cargo build ${usage_target:+--target} ${usage_target} ${usage_release:+--release
 if [[ "${usage_target}" != "" ]]; then
   for f in "target/${usage_target}/release/"*; do
     if [[ -x "${f}" && -f "${f}" ]]; then
-      new_name="target/release/$(basename "${f}").${version:-0.0}.${usage_target}"
+      new_name="target/release/$(insert_version_target "$(basename "${f}")" "${version:-0.0}" "${usage_target}")"
       echo "Copying '${f}' to '${new_name}'"
       cp "${f}" "${new_name}"
     fi
