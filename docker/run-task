@@ -22,15 +22,14 @@ container_id=$(docker container create "${tag_name}")
 filelist=$(mktemp file-list-XXXXXX --suffix=".txt")
 docker cp "${container_id}:/app/filelist.txt" "${filelist}"
 
-patterns=$(mise tasks info "${usage_task_name?}" --json | jq -r '.outputs[]')
+mapfile -t patterns < <(mise tasks info "${usage_task_name?}" --json | jq -r '.outputs[]')
 
 while IFS= read -r line; do
   if [[ -n "${line}" ]]; then # Process non-empty lines
-    for pattern in ${patterns}; do
+    for pattern in "${patterns[@]}"; do
       pattern="./${pattern}"
-
       # shellcheck disable=SC2053
-      if [[ ${line} == ${pattern} ]]; then
+      if [[ "${line}" == ${pattern} ]]; then
         mkdir -p "$(dirname "${line}")"
         docker cp "${container_id}:/app/${line}" "${line}"
       fi
