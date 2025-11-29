@@ -1,22 +1,27 @@
 #!/usr/bin/bash
 # [MISE] hide=true
 # [MISE] tools={"jq"="latest"}
-# [USAGE] arg "<task>" help="Task to run in docker"
+# [USAGE] arg "<task_name>" help="Name of task to run in docker"
+# [USAGE] arg "[task_cmd]" help="Full task command to run in docker if different from task name"
 
 set -o errexit
 set -o pipefail
 
+command=${usage_task_cmd:-${usage_task_name}}
+
 tag_name=$(mktemp --dry-run mise-docker-XXXXXXX --suffix=":10h" | tr '[:upper:]' '[:lower:]')
 
-docker build --progress plain -f "${MISE_TASK_DIR}/Dockerfile.task" --build-arg task="${usage_task?}" -t "${tag_name}" .
+docker build --progress plain -f "${MISE_TASK_DIR}/Dockerfile.task" --build-arg task="${command}" -t "${tag_name}" .
 
 container_id=$(docker container create "${tag_name}")
 filelist=$(mktemp file-list-XXXXXX --suffix=".txt")
 docker cp "${container_id}:/app/filelist.txt" "${filelist}"
 
+patterns=$(mise tasks info "${usage_task_name?}" --json | jq -r '.outputs[]')
+
 while IFS= read -r line; do
   if [[ -n "${line}" ]]; then # Process non-empty lines
-    for pattern in $(mise tasks info "${usage_task?}" --json | jq -r '.outputs[]'); do
+    for pattern in ${patterns}; do
       pattern="./${pattern}"
 
       # shellcheck disable=SC2053
