@@ -1,0 +1,14 @@
+FROM jdxcode/mise:latest
+
+WORKDIR /app
+
+COPY .config ./.config
+COPY mise.toml ./mise.toml
+RUN mise trust mise.toml
+
+RUN mise run docker-prepare || true
+
+COPY . ./
+ARG task
+RUN mise run ${task}
+RUN find > filelist.txt

@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+# [MISE] hide=true
+# [MISE] tools={"jq"="latest"}
+# [USAGE] arg "<task>" help="Task to run in docker"
+
+set -o errexit
+set -o pipefail
+
+tag_name=$(mktemp --dry-run mise-docker-XXXXXXX --suffix=":10h" | tr '[:upper:]' '[:lower:]')
+
+docker build --progress plain -f "${MISE_TASK_DIR}/Dockerfile.task" --build-arg task="${usage_task?}" -t "${tag_name}" .
+
+container_id=$(docker container create "${tag_name}")
+filelist=$(mktemp file-list-XXXXXX --suffix=".txt")
+docker cp "${container_id}:/app/filelist.txt" "${filelist}"
+
+while IFS= read -r line; do
+  if [[ -n "${line}" ]]; then # Process non-empty lines
+    echo "Checking            ${line}"
+    for pattern in $(mise tasks info "${usage_task?}" --json | jq -r '.outputs[]'); do
+      pattern="./${pattern}"
+      echo "... against pattern ${pattern}"
+
+      # shellcheck disable=SC2053
+      if [[ ${line} == ${pattern} ]]; then
+        echo "XXXXXXXXXXXXX MATCH ${pattern} => ${line}"
+        mkdir -p "$(dirname "${line}")"
+        docker cp "${container_id}:/app/${line}" "${line}"
+      fi
+    done
+  fi
+done < "${filelist}"
+rm "${filelist}"
+docker container rm "${container_id}"
