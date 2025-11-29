@@ -11,11 +11,16 @@ if (( $EUID != 0 )); then
     SUDO='sudo'
 fi
 
+update_needed="yes"
 function install_if_needed {
   local bin=${1?}
   local pkg=${2-${bin}}
   if ! command -v "${bin}"; then
     echo "Needs to install ${pkg} ..."
+    if [[ -n "${update_needed}" ]]; then
+      ${SUDO} apt-get --yes update
+      update_needed=""
+    fi
     ${SUDO} apt-get --yes install "${pkg}"
   fi
 }
