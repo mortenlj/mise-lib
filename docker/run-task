@@ -11,7 +11,12 @@ command=${usage_task_cmd:-${usage_task_name}}
 
 tag_name=$(mktemp --dry-run mise-docker-XXXXXXX --suffix=":10h" | tr '[:upper:]' '[:lower:]')
 
-docker build --progress plain -f "${MISE_TASK_DIR}/Dockerfile.task" --build-arg task="${command}" -t "${tag_name}" .
+docker build --file "${MISE_TASK_DIR}/Dockerfile.task" \
+  --build-arg task="${command}" \
+  --build-arg MISE_LIB_VERSION="${MISE_LIB_VERSION}" \
+  --build-arg MISE_LIB_CLEAN_VERSION="${MISE_LIB_CLEAN_VERSION}" \
+  --tag "${tag_name}" \
+  .
 
 container_id=$(docker container create "${tag_name}")
 filelist=$(mktemp file-list-XXXXXX --suffix=".txt")

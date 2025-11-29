@@ -10,5 +10,7 @@ RUN mise run docker-prepare || true
 
 COPY . ./
 ARG task
+ARG MISE_LIB_VERSION
+ARG MISE_LIB_CLEAN_VERSION
 RUN mise run ${task}
 RUN find > filelist.txt
