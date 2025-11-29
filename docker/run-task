@@ -16,14 +16,11 @@ docker cp "${container_id}:/app/filelist.txt" "${filelist}"
 
 while IFS= read -r line; do
   if [[ -n "${line}" ]]; then # Process non-empty lines
-    echo "Checking            ${line}"
     for pattern in $(mise tasks info "${usage_task?}" --json | jq -r '.outputs[]'); do
       pattern="./${pattern}"
-      echo "... against pattern ${pattern}"
 
       # shellcheck disable=SC2053
       if [[ ${line} == ${pattern} ]]; then
-        echo "XXXXXXXXXXXXX MATCH ${pattern} => ${line}"
         mkdir -p "$(dirname "${line}")"
         docker cp "${container_id}:/app/${line}" "${line}"
       fi
