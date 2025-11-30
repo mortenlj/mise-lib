@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+# [MISE] hide=true
+
+set -o errexit
+set -o pipefail
+
+if [[ -z ${DOCKER_USERNAME} || -z ${DOCKER_TOKEN} ]]; then
+  echo "[docker:login] No token/username given, not logging in"
+  exit 0
+fi
+
+echo "${DOCKER_TOKEN?}" | docker login --username "${DOCKER_USERNAME?}" --password-stdin ghcr.io

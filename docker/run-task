@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 # [MISE] hide=true
 # [MISE] tools={"jq"="latest"}
+# [MISE] depends=["docker:login"]
 # [USAGE] arg "<task_name>" help="Name of task to run in docker"
 # [USAGE] arg "[task_cmd]" help="Full task command to run in docker if different from task name"
 
