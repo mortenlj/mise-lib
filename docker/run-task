@@ -13,7 +13,7 @@ task_slug=$(tr ':' '_' <<< "${usage_task_name}")
 
 if [[ -n ${GITHUB_REPOSITORY} ]]; then
   image_name=ghcr.io/${GITHUB_REPOSITORY}/${task_slug}
-  cache_from=gha
+  cache_from=type=gha
   cache_to=type=gha,mode=max
 else
   image_name="ttl.sh/${USER}/$(basename "${MISE_PROJECT_ROOT}")/${task_slug}"
