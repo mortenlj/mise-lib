@@ -8,13 +8,14 @@ set -o errexit
 set -o pipefail
 
 command=${usage_task_cmd:-${usage_task_name}}
+task_slug=$(tr ':' '_' <<< "${usage_task_name}")
 
 if [[ -n ${GITHUB_REPOSITORY} ]]; then
-  image_name=ghcr.io/${GITHUB_REPOSITORY}/${usage_task_name}
+  image_name=ghcr.io/${GITHUB_REPOSITORY}/${task_slug}
   cache_from=gha
   cache_to=type=gha,mode=max
 else
-  image_name="ttl.sh/${USER}/$(basename "${MISE_PROJECT_ROOT}")/${usage_task_name}"
+  image_name="ttl.sh/${USER}/$(basename "${MISE_PROJECT_ROOT}")/${task_slug}"
   cache_from=type=registry,ref=${image_name}/cache:1h
   cache_to=type=registry,ref=${image_name}/cache:1h,mode=max
 fi
