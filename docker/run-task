@@ -9,12 +9,24 @@ set -o pipefail
 
 command=${usage_task_cmd:-${usage_task_name}}
 
-tag_name=$(mktemp --dry-run mise-docker-XXXXXXX --suffix=":10h" | tr '[:upper:]' '[:lower:]')
+if [[ -n ${GITHUB_REPOSITORY} ]]; then
+  image_name=ghcr.io/${GITHUB_REPOSITORY}/${usage_task_name}
+  cache_from=gha
+  cache_to=type=gha,mode=max
+else
+  image_name="ttl.sh/${USER}/$(basename "${MISE_PROJECT_ROOT}")/${usage_task_name}"
+  cache_from=type=registry,ref=${image_name}/cache:1h
+  cache_to=type=registry,ref=${image_name}/cache:1h,mode=max
+fi
+tag_name="${image_name}:1h"
 
-docker build --file "${MISE_TASK_DIR}/Dockerfile.task" \
+docker buildx build --file "${MISE_TASK_DIR}/Dockerfile.task" \
   --build-arg task="${command}" \
   --build-arg MORTENLJ_MISE_LIB_VERSION="${MORTENLJ_MISE_LIB_VERSION}" \
   --build-arg MORTENLJ_MISE_LIB_CLEAN_VERSION="${MORTENLJ_MISE_LIB_CLEAN_VERSION}" \
+  --cache-from "${cache_from}" \
+  --cache-to "${cache_to}" \
+  --load \
   --tag "${tag_name}" \
   .
 
