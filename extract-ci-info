@@ -77,12 +77,14 @@ class Output:
             LOG.warning("To correctly determine if source files has been changed, you need to fetch all git history.")
             LOG.warning("Consider setting 'fetch-depth: 0' in your checkout action if running in GitHub Actions.")
         base_sha = git(["git", "rev-list", "--tags", "--max-count=1"]).strip()
+        if not base_sha:
+            base_sha = git(["git", "hash-object", "-t", "tree", "/dev/null"]).strip() # SHA of empty tree
         LOG.debug("Last tag has sha %r", base_sha)
         head_sha = git(["git", "rev-parse", "HEAD"]).strip()
         LOG.debug("Head has sha %r", head_sha)
         changed_files = git(["git", "diff", "--name-only", base_sha, head_sha]).splitlines(keepends=False)
         LOG.debug("Changed files: %s", pformat(changed_files))
-        sources = mise_config["tasks"]["release-build"]["sources"]
+        sources = mise_config["tasks"]["release-build"].get("sources", [])
         sources.append(".github/workflows/*.y*ml")
         for src in sources:
             pattern = re.compile(glob.translate(src, recursive=True))
