@@ -2,14 +2,14 @@
 # [MISE] description="Assemble manifests into a single deploy.yaml for for kubectl apply"
 # [MISE] tools={"pipx:jinja2-cli"="latest"}
 # [USAGE] arg "<templates_dir>" help="Directories containing templates to assemble into a manifest"
-# [USAGE] arg "[output]" help="File to write to. default=${MISE_CONFIG_ROOT}/deploy.yaml"
 # [USAGE] arg "[image]" help="Override the image created. default=ghcr.io/mortenlj/$(basename ${MISE_PROJECT_ROOT})"
+# [USAGE] arg "[output]" help="File to write to. default=${MISE_CONFIG_ROOT}/deploy.yaml"
 
 set -o errexit
 set -o pipefail
 
-IMAGE="ghcr.io/${usage_image:-ghcr.io/mortenlj/$(basename "${MISE_PROJECT_ROOT}")}"
-VERSION="${MORTENLJ_MISE_LIB_VERSION:-latest}"
+IMAGE="${usage_image:-ttl.sh/mortenlj-$(basename "${MISE_PROJECT_ROOT}")}"
+VERSION="${MORTENLJ_MISE_LIB_VERSION:-1h}"
 
 export IMAGE
 export VERSION
