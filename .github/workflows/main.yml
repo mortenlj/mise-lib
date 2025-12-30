@@ -1,0 +1,96 @@
+name: Build
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '14 4 * * 5'
+
+env:
+  image_root: ghcr.io/${{ github.repository }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+          submodules: "true"
+      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - run: mise run extract-ci-info
+        id: ci-info
+    outputs:
+      run-publish: ${{ steps.ci-info.outputs.run-publish }}
+      version: ${{ steps.ci-info.outputs.version }}
+      clean-version: ${{ steps.ci-info.outputs.clean-version }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+    strategy:
+      matrix:
+        images:
+          - python-builder
+          - python-3.11
+    steps:
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and possibly push docker image ${{ env.image_root }}/${{ matrix.image }}
+        uses: docker/build-push-action@v6
+        with:
+          file: "./baseimages/${{ matrix.image }}.Dockerfile"
+          push: ${{ fromJSON(needs.setup.outputs.run-publish) }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ${{ env.image_root }}/${{ matrix.image }}:${{ fromJSON(needs.setup.outputs.version) }}
+            ${{ env.image_root }}/${{ matrix.image }}:latest
+
+  cleanup:
+    name: Cleanup
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      packages: write
+    steps:
+      - name: Cleanup main images
+        uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          keep-n-tagged: 5
+          older-than: 2 weeks
+          delete-untagged: true
+          delete-ghost-images: true
+          delete-orphaned-images: true
+          delete-partial-images: true
+      - name: Cleanup old cache images
+        uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: homely-mqtt/cache
+          exclude-tags: cache
+          keep-n-tagged: 1
+          delete-untagged: true
+          delete-ghost-images: true
+          delete-orphaned-images: true
+          delete-partial-images: false

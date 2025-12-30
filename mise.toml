@@ -1,0 +1,38 @@
+[task_config]
+includes = ["./virtual_tasks.toml", "./"]
+
+[tasks.test]
+description = "Run tests"
+
+[tasks.fmt]
+description = "Format source"
+
+[tasks.fmt-check]
+description = "Check formatting"
+
+[tasks.lint]
+description = "Lint the project"
+
+[tasks.lint-fix]
+description = "Run lint fixers"
+
+[tasks.ci]
+depends = ["test", "fmt-check", "lint"]
+description = "Run CI tasks"
+
+[tasks.build]
+description = "Build the project in debug mode"
+depends = [
+    "build-image python-builder",
+    "build-image python-3.11",
+]
+
+[tasks.build-image]
+usage = '''
+arg "<image>" help="Image to build"
+'''
+run = "docker buildx build --load -f baseimages/${usage_image?}.Dockerfile -t ghcr.io/mortenlj/mise-lib/${usage_image?}:latest ."
+
+[tasks.release-build]
+description = "Build the project"
+depends = [ "build" ]
