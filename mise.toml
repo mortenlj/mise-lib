@@ -1,3 +1,10 @@
+[tools]
+python = ["3.14", "3.13", "3.12", "3.11", "3.10"]
+uv = "latest"
+ruff = "latest"
+"pipx:jinja2-cli"="latest"
+"cargo-binstall"="latest"
+
 [task_config]
 includes = ["./virtual_tasks.toml", "./"]
 
