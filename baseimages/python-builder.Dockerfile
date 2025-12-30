@@ -17,13 +17,13 @@ ONBUILD RUN mise trust -a && mise install
 # Load downstream project files and install dependencies
 ONBUILD COPY pyproject.toml uv.lock ./
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
-	        uv sync --locked --no-install-project \
+	        uv sync --locked --no-install-project
 
 # Load downstream sources and install project
 ONBUILD COPY ibidem/ ./ibidem/
 ONBUILD COPY tests/ ./tests/
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
-	        uv sync --locked \
+	        uv sync --locked
 
 # Run downstream ci tasks
 ONBUILD RUN mise run ci
