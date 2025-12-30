@@ -62,7 +62,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ env.image_root }}/${{ matrix.image }}:${{ fromJSON(needs.setup.outputs.version) }}
+            ${{ env.image_root }}/${{ matrix.image }}:${{ fromJSON(needs.setup.outputs.clean-version) }}
             ${{ env.image_root }}/${{ matrix.image }}:latest
 
   cleanup:
