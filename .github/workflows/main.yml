@@ -12,6 +12,7 @@ on:
 
 env:
   image_root: ghcr.io/${{ github.repository }}
+  images: '["python-builder","python-3.11"]'
 
 jobs:
   setup:
@@ -38,9 +39,7 @@ jobs:
       - setup
     strategy:
       matrix:
-        image:
-          - python-builder
-          - python-3.11
+        image: ${{ fromJSON(env.images) }}
     steps:
       - name: Set up QEMU
         id: qemu
@@ -75,25 +74,18 @@ jobs:
     needs: build
     permissions:
       packages: write
+    strategy:
+      matrix:
+        image: ${{ fromJSON(env.images) }}
     steps:
       - name: Cleanup main images
         uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          package: ${{ env.image_root }}/${{ matrix.image }}
           keep-n-tagged: 5
-          older-than: 2 weeks
+          older-than: 4 weeks
           delete-untagged: true
           delete-ghost-images: true
           delete-orphaned-images: true
           delete-partial-images: true
-      - name: Cleanup old cache images
-        uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          package: homely-mqtt/cache
-          exclude-tags: cache
-          keep-n-tagged: 1
-          delete-untagged: true
-          delete-ghost-images: true
-          delete-orphaned-images: true
-          delete-partial-images: false
