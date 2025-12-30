@@ -35,7 +35,7 @@ jobs:
       - setup
     strategy:
       matrix:
-        images:
+        image:
           - python-builder
           - python-3.11
     steps:
