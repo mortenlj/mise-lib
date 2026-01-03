@@ -7,12 +7,14 @@ WORKDIR /app
 
 # Pre-install lots of tools
 COPY mise.toml ./mise.toml
-RUN mise trust -a && mise install
+RUN --mount=type=cache,target=/root/.cache/mise \
+    mise trust -a && mise install
 
 # Load downstream mise config and run install with that config
 ONBUILD COPY .config ./.config/
 ONBUILD COPY mise.toml ./mise.toml
-ONBUILD RUN mise trust -a && mise install
+ONBUILD RUN --mount=type=cache,target=/root/.cache/mise \
+            mise trust -a && mise install
 
 # Load downstream project files and install dependencies
 ONBUILD COPY pyproject.toml uv.lock ./
