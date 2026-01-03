@@ -5,4 +5,4 @@
 set -o errexit
 set -o pipefail
 
-cargo clippy --fix
+cargo clippy --fix --no-deps --all-targets
