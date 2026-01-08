@@ -2,7 +2,7 @@
 # [MISE] description="Assemble manifests into a single deploy.yaml for for kubectl apply"
 # [MISE] tools={"pipx:jinja2-cli"="latest"}
 # [MISE] outputs=["deploy.yaml"]
-# [USAGE] arg "[image]" help="Override the image created. default=ghcr.io/mortenlj/$(basename ${MISE_PROJECT_ROOT})"
+# [USAGE] arg "[image]" help="Override the image created. default=ttl.sh/mortenlj-$(basename \"${MISE_PROJECT_ROOT}\")"
 
 set -o errexit
 set -o pipefail
@@ -15,12 +15,25 @@ export VERSION
 
 output=$(mktemp deploy-XXXXXX --suffix=".yaml")
 
+# Save current nullglob state as a command
+NULLGLOB_OLD=$(shopt -p nullglob || true)
+shopt -s nullglob
+
+echo Assembling templates
 for template in "${MISE_CONFIG_ROOT}/deploy/"*.j2; do
   jinja2 "${template}" >> "${output?}"
 done
 
-for plain in "${MISE_CONFIG_ROOT}/deploy/"/*.yaml; do
+for plain in "${MISE_CONFIG_ROOT}/deploy/"*.yaml; do
   cat "${plain}" >> "${output?}"
 done
 
-mv "${output}" "${MISE_CONFIG_ROOT}/deploy.yaml"
+# Restore previous nullglob state
+if [[ -n "$NULLGLOB_OLD" ]]; then
+  eval "$NULLGLOB_OLD"
+fi
+
+output_directory="${MISE_CONFIG_ROOT}/mise-output/"
+mkdir --parents "${output_directory}"
+
+mv "${output}" "${output_directory}/deploy.yaml"
