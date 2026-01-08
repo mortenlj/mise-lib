@@ -39,6 +39,8 @@ jobs:
     strategy:
       matrix:
         image:
+          - rust-builder
+          - rust
           - python-builder
           - python-3.11
     steps:
@@ -78,6 +80,8 @@ jobs:
     strategy:
       matrix:
         image:
+          - rust-builder
+          - rust
           - python-builder
           - python-3.11
     steps:

@@ -2,7 +2,7 @@
 # [MISE] hide=true
 # [MISE] depends=["rust:setup"]
 # [USAGE] arg "[target]" help="Target triple" {
-# [USAGE]   choices "armv7-unknown-linux-gnueabihf" "x86_64-unknown-linux-gnu" "aarch64-unknown-linux-gnu"
+# [USAGE]   choices "armv7-unknown-linux-gnueabihf" "x86_64-unknown-linux-gnu" "aarch64-unknown-linux-gnu" "x86_64-unknown-linux-musl" "aarch64-unknown-linux-musl"
 # [USAGE] }
 # [USAGE] flag "--release" help="Build release mode"
 
@@ -36,6 +36,14 @@ case ${usage_target} in
   aarch64-unknown-linux-gnu)
     CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$(command -v "aarch64-linux-gnu-gcc")"
     export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER
+    ;;
+  aarch64-unknown-linux-musl)
+    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER="$(command -v "aarch64-linux-gnu-gcc")"
+    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER
+    ;;
+  x86_64-unknown-linux-musl)
+    CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER="$(command -v "x86_64-linux-gnu-gcc")"
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER
     ;;
 esac
 
