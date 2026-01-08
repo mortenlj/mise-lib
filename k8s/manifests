@@ -8,7 +8,7 @@ set -o errexit
 set -o pipefail
 
 IMAGE="${usage_image:-ttl.sh/mortenlj-$(basename "${MISE_PROJECT_ROOT}")}"
-VERSION="${MORTENLJ_MISE_LIB_VERSION:-1h}"
+VERSION="${MORTENLJ_MISE_LIB_CLEAN_VERSION:-1h}"
 
 export IMAGE
 export VERSION
