@@ -32,6 +32,8 @@ description = "Build the project in debug mode"
 depends = [
     "build-image python-builder",
     "build-image python-3.11",
+    "build-image rust-builder",
+    "build-image rust",
 ]
 
 [tasks.build-image]
