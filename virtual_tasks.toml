@@ -6,8 +6,8 @@ depends = ["rust:build-target"]
 hide = true
 depends = [
     "rust:build-target --release armv7-unknown-linux-gnueabihf",
-    "rust:build-target --release x86_64-unknown-linux-musl",
-    "rust:build-target --release aarch64-unknown-linux-musl",
+    "rust:build-target --release x86_64-unknown-linux-gnu",
+    "rust:build-target --release aarch64-unknown-linux-gnu",
 ]
 
 ["docker:build"]
