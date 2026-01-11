@@ -56,10 +56,16 @@ export RUSTFLAGS
 # shellcheck disable=SC2086
 cargo build --target ${target} ${usage_release:+--release}
 
-if [[ "${usage_target}" != "" ]]; then
-  for f in "target/${usage_target}/release/"*; do
+if [[ "${usage_release}" == "true" ]]; then
+  profile="release"
+else
+  profile="debug"
+fi
+
+if [[ "${target}" != "" ]]; then
+  for f in "target/${target}/${profile}/"*; do
     if [[ -x "${f}" && -f "${f}" ]]; then
-      new_name="target/release/$(insert_version_target "$(basename "${f}")" "${MORTENLJ_MISE_LIB_VERSION:-0.0}" "${usage_target}")"
+      new_name="target/${profile}/$(insert_version_target "$(basename "${f}")" "${MORTENLJ_MISE_LIB_VERSION:-0.0}" "${target}")"
       echo "Copying '${f}' to '${new_name}'"
       cp "${f}" "${new_name}"
     fi
