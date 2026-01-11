@@ -1,14 +1,4 @@
-FROM jdxcode/mise:latest AS build
-WORKDIR /app
-
-ENV RUSTFLAGS="-C target-feature=+crt-static"
-
-# Pre-install lots of tools
-RUN --mount=type=cache,target=/root/.cache/mise \
-    --mount=type=bind,target=/app \
-    mise trust -a && \
-    mise install && \
-    mise run rust:setup
+FROM ghcr.io/mortenlj/mise-lib/rust-base:latest AS build
 
 # Load downstream mise config and run install with that config
 ONBUILD COPY .config/mise-lib ./.config/mise-lib

@@ -30,8 +30,10 @@ description = "Run CI tasks"
 [tasks.build]
 description = "Build the project in debug mode"
 depends = [
+    "build-image python-base",
     "build-image python-builder",
     "build-image python-3.11",
+    "build-image rust-base",
     "build-image rust-builder",
     "build-image rust",
 ]
