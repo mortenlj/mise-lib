@@ -27,8 +27,11 @@ insert_version_target() {
   echo "${new_name}"
 }
 
+default_target=$(rustup show | grep "Default host" | awk '{ print $3 }')
+target="${usage_target:-${default_target}}"
+
 # shellcheck disable=SC2154
-case ${usage_target} in
+case ${target} in
   armv7-unknown-linux-gnueabihf)
     CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER="$(command -v "arm-linux-gnueabihf-gcc")"
     export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER
@@ -47,8 +50,11 @@ case ${usage_target} in
     ;;
 esac
 
+RUSTFLAGS="-C target-feature=+crt-static"
+export RUSTFLAGS
+
 # shellcheck disable=SC2086
-cargo build ${usage_target:+--target} ${usage_target} ${usage_release:+--release}
+cargo build --target ${target} ${usage_release:+--release}
 
 if [[ "${usage_target}" != "" ]]; then
   for f in "target/${usage_target}/release/"*; do

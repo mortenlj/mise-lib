@@ -1,8 +1,12 @@
 #!/usr/bin/bash
 # [MISE] hide=true
 # [MISE] depends=["rust:setup"]
+# [MISE] env={RUSTFLAGS="-C target-feature=+crt-static"}
 
 set -o errexit
 set -o pipefail
+
+RUSTFLAGS="-C target-feature=+crt-static"
+export RUSTFLAGS
 
 cargo nextest run --no-tests warn

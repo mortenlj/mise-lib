@@ -25,6 +25,9 @@ function install_if_needed {
   fi
 }
 
+RUSTFLAGS="-C target-feature=+crt-static"
+export RUSTFLAGS
+
 install_if_needed arm-linux-gnueabihf-gcc gcc-arm-linux-gnueabihf
 install_if_needed aarch64-linux-gnu-gcc gcc-aarch64-linux-gnu
 install_if_needed cmake
