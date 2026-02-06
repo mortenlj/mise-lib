@@ -1,0 +1,3 @@
+{
+  "ignorePaths": ["baseimages/python-3.11.Dockerfile"]
+}
