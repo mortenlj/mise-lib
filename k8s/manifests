@@ -36,9 +36,9 @@ if [[ -n "$NULLGLOB_OLD" ]]; then
   eval "$NULLGLOB_OLD"
 fi
 
-output_directory="${MISE_CONFIG_ROOT}/mise-output/"
+output_directory="${MISE_CONFIG_ROOT}/mise-output"
 mkdir --parents "${output_directory}"
 
 mv "${output}" "${output_directory}/deploy.yaml"
 
-echo Manifests assembled at"${output_directory}/deploy.yaml"
+echo "Manifests assembled at ${output_directory}/deploy.yaml"
