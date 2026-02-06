@@ -21,10 +21,13 @@ shopt -s nullglob
 
 echo Assembling templates
 for template in "${MISE_CONFIG_ROOT}/deploy/"*.j2; do
+  echo ... "${template}"
   jinja2 "${template}" >> "${output?}"
 done
 
+echo Assembling plain files
 for plain in "${MISE_CONFIG_ROOT}/deploy/"*.yaml; do
+  echo ... "${plain}"
   cat "${plain}" >> "${output?}"
 done
 
