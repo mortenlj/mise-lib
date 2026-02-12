@@ -1,4 +1,5 @@
-FROM python:3.11-slim AS docker
+ARG PY_VERSION=3
+FROM python:${PY_VERSION}-slim AS docker
 WORKDIR /app
 
 # Load built virtualenv

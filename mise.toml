@@ -1,5 +1,5 @@
 [tools]
-python = ["3.14", "3.13", "3.12", "3.11", "3.10"]
+python = ["3.14", "3.13", "3.12", "3.11"]
 uv = "latest"
 ruff = "latest"
 "pipx:jinja2-cli"="latest"
@@ -32,7 +32,10 @@ description = "Build the project in debug mode"
 depends = [
     "build-image python-base",
     "build-image python-builder",
-    "build-image python-3.11",
+    "build-python-image 3.11",
+    "build-python-image 3.12",
+    "build-python-image 3.13",
+    "build-python-image 3.14",
     "build-image rust-base",
     "build-image rust-builder",
     "build-image rust",
@@ -43,6 +46,12 @@ usage = '''
 arg "<image>" help="Image to build"
 '''
 run = "docker buildx build --load -f baseimages/${usage_image?}.Dockerfile -t ghcr.io/mortenlj/mise-lib/${usage_image?}:latest ."
+
+[tasks.build-python-image]
+usage = '''
+arg "<py_version>" help="Python version"
+'''
+run = "docker buildx build --load --build-arg PY_VERSION=${usage_py_version?} -f baseimages/python-prod.Dockerfile -t ghcr.io/mortenlj/mise-lib/python-${usage_py_version?}:latest ."
 
 [tasks.release-build]
 description = "Build the project"
