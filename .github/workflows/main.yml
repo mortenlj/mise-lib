@@ -28,6 +28,7 @@ jobs:
       run-publish: ${{ steps.ci-info.outputs.run-publish }}
       version: ${{ steps.ci-info.outputs.version }}
       clean-version: ${{ steps.ci-info.outputs.clean-version }}
+      tool-versions: ${{ steps.ci-info.outputs.tool-versions }}
 
   build-bases:
     runs-on: ubuntu-latest
@@ -119,11 +120,7 @@ jobs:
       - build-bases
     strategy:
       matrix:
-        py_version:
-          - 3.11
-          - 3.12
-          - 3.13
-          - 3.14
+        py_version: ${{ fromJSON(needs.setup.outputs.tool-versions).python }}
     steps:
       - name: Set up QEMU
         id: qemu

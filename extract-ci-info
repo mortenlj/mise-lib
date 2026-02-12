@@ -110,6 +110,16 @@ class Output:
         build_config = mise_config["tasks"]["release-build"]
         return "\n".join(build_config.get("outputs", []))
 
+    def tool_versions(self, mise_config):
+        tools = mise_config.get("tools", {})
+        output = {}
+        for tool in tools.keys():
+            versions = tools.get(tool)
+            if not isinstance(versions, List):
+                continue
+            output[tool] = versions
+        return output
+
     def _version(self, mise_config, clean=False):
         vars = mise_config.get("vars", {})
         major = vars.get("major_version", "0")
