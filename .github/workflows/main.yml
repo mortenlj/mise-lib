@@ -139,7 +139,7 @@ jobs:
       - name: Build and possibly push docker image ${{ env.image_root }}/${{ matrix.image }}
         uses: docker/build-push-action@v6
         with:
-          file: "./baseimages/python-production.Dockerfile"
+          file: "./baseimages/python-prod.Dockerfile"
           build-args: |
             PY_VERSION=${{ matrix.py_version }}
           push: ${{ fromJSON(needs.setup.outputs.run-publish) }}
