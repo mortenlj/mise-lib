@@ -12,13 +12,13 @@ ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
 	        uv sync --locked --no-install-project
 
 # Load downstream sources and install project
-ONBUILD COPY ibidem/ ./ibidem/
-ONBUILD COPY tests/ ./tests/
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
-	        uv sync --locked
+            --mount=type=bind,target=/app,rw \
+            uv sync --locked
 
 # Run downstream ci tasks
-ONBUILD RUN mise run ci
+ONBUILD RUN --mount=type=bind,target=/app,rw \
+            mise run ci
 
 # Remove dev dependencies
 ONBUILD ENV UV_NO_DEV=1
