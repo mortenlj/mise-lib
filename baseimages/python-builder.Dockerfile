@@ -23,4 +23,5 @@ ONBUILD RUN --mount=type=bind,target=/app,rw \
 # Remove dev dependencies
 ONBUILD ENV UV_NO_DEV=1
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
-	        uv sync --locked
+	        --mount=type=bind,target=/app,rw \
+            uv sync --locked
