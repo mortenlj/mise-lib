@@ -3,7 +3,7 @@ FROM python:${PY_VERSION}-slim AS docker
 WORKDIR /app
 
 # Load built virtualenv
-ONBUILD COPY --from=build /app/.venv/ ./.venv/
+ONBUILD COPY --from=build /venv /app/.venv
 # Retarget virtualenv to the python in this image
 ONBUILD RUN ln --force --logical --symbolic --target-directory /app/.venv/bin /usr/local/bin/python*
 

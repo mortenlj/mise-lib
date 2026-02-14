@@ -25,3 +25,5 @@ ONBUILD ENV UV_NO_DEV=1
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
 	        --mount=type=bind,target=/app,rw \
             uv sync --locked
+
+ONBUILD RUN ${UV_PROJECT_ENVIRONMENT}/bin/python -c "import ibidem" ## Minimal testing that imports actually work
