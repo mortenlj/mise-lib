@@ -23,7 +23,7 @@ on:
 jobs:
   deploy:
     name: Deploy
-    if: github.ref == '${{ inputs.main-branch }}'
+    if: '${{ github.ref == inputs.main-branch }}'
     runs-on: ubuntu-latest
     permissions:
       id-token: write # This is required for requesting the JWT
