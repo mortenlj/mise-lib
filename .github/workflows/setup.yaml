@@ -3,12 +3,18 @@ name: setup
 on:
   workflow_call:
     outputs:
-      ci-tasks: ${{ jobs.setup.outputs.ci-tasks }}
-      run-publish: ${{ jobs.setup.outputs.run-publish }}
-      artifacts: ${{ jobs.setup.outputs.artifacts }}
-      version: ${{ jobs.setup.outputs.version }}
-      clean-version: ${{ jobs.setup.outputs.clean-version }}
-      release-build-tasks: ${{ jobs.setup.outputs.release-build-tasks }}
+      ci-tasks:
+        value: ${{ jobs.setup.outputs.ci-tasks }}
+      run-publish:
+        value: ${{ jobs.setup.outputs.run-publish }}
+      artifacts:
+        value: ${{ jobs.setup.outputs.artifacts }}
+      version:
+        value: ${{ jobs.setup.outputs.version }}
+      clean-version:
+        value: ${{ jobs.setup.outputs.clean-version }}
+      release-build-tasks:
+        value: ${{ jobs.setup.outputs.release-build-tasks }}
 
 
 jobs:
