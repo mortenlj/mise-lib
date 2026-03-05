@@ -1,0 +1,23 @@
+name: setup
+
+on:
+  workflow_call:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+          submodules: "true"
+      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - run: mise run extract-ci-info
+        id: ci-info
+    outputs:
+      ci-tasks: ${{ steps.ci-info.outputs.ci-tasks }}
+      run-publish: ${{ steps.ci-info.outputs.run-publish }}
+      artifacts: ${{ steps.ci-info.outputs.artifacts }}
+      version: ${{ steps.ci-info.outputs.version }}
+      clean-version: ${{ steps.ci-info.outputs.clean-version }}
+      release-build-tasks: ${{ steps.ci-info.outputs.release-build-tasks }}
