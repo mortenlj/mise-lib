@@ -17,7 +17,7 @@ on:
         type: string
         default: refs/heads/main
     secrets:
-      GITHUB_TOKEN:
+      GHCR_PASSWORD:
         required: true
 
 
@@ -44,7 +44,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_PASSWORD }}
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
         with:
           fetch-depth: 0
