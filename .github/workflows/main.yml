@@ -1,4 +1,4 @@
-name: Build
+name: Build base images
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -6,6 +6,10 @@ concurrency:
 
 on:
   push:
+    paths:
+      - baseimages
+      - mise.toml
+      - rust/setup
   workflow_dispatch:
   schedule:
     - cron: '14 4 * * 5'
