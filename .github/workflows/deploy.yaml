@@ -1,0 +1,52 @@
+name: deploy
+
+on:
+  workflow_call:
+    inputs:
+      main-branch:
+        description: The ref of the main branch in this repo
+        required: false
+        type: string
+        default: refs/heads/main
+      ping-target:
+        description: The host to ping after joining ZeroTier network
+        required: false
+        type: string
+        default: k3s.home.ibidem.no
+    secrets:
+      ZEROTIER_NETWORK_ID:
+        required: true
+      ZEROTIER_API_ACCESSTOKEN:
+        required: true
+
+
+jobs:
+  deploy:
+    name: Deploy
+    if: github.ref == '${{ inputs.main-branch }}'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    steps:
+      - name: Get kubeconfig
+        uses: mortenlj/kube-actions/get-kubeconfig@main
+      - name: Download manifests from build
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: manifests
+      - id: join-zt
+        name: Join ZeroTier network
+        uses: mortenlj/zerotier-actions/join-zt@main
+        with:
+          network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+          api_accesstoken: ${{ secrets.ZEROTIER_API_ACCESSTOKEN }}
+          ping_target: ${{ inputs.ping-target }}
+      - name: Run kubectl apply
+        uses: mortenlj/kube-actions/apply-manifest@main
+      - name: Leave ZeroTier network
+        if: always()
+        uses: mortenlj/zerotier-actions/leave-zt@main
+        with:
+          node_id: ${{ steps.join-zt.outputs.node_id }}
+          network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+          api_accesstoken: ${{ secrets.ZEROTIER_API_ACCESSTOKEN }}
