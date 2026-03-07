@@ -1,18 +1,17 @@
 FROM ghcr.io/mortenlj/mise-lib/python-base:latest AS build
 
-# Load downstream mise config and run install with that config
+# Load downstream mise config and project files and run install with that config
 ONBUILD COPY .config ./.config/
-ONBUILD COPY mise.toml ./mise.toml
+ONBUILD COPY mise.toml pyproject.toml uv.lock ./
 ONBUILD RUN --mount=type=cache,target=/root/.cache/mise \
             mise trust -a && mise install
 
-# Load downstream project files and install dependencies
-ONBUILD COPY pyproject.toml uv.lock ./
-ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
-	        uv sync --locked --no-install-project
-
 ONBUILD ARG MORTENLJ_MISE_LIB_CLEAN_VERSION=0.0.0+develop
 ONBUILD ENV UV_DYNAMIC_VERSIONING_BYPASS=${MORTENLJ_MISE_LIB_CLEAN_VERSION}
+
+# Install dependencies
+ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
+	        uv sync --locked --no-install-project
 
 # Load downstream sources and install project
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
