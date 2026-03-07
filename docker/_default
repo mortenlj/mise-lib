@@ -16,8 +16,17 @@ else
 fi
 tag_name="${image_name}:1h"
 
+GITHUB_OUTPUT=$(mktemp --suffix=.txt --tmpdir ci-info-XXXX)
+export GITHUB_OUTPUT
+mise run extract-ci-info
+
+PY_VERSION=$(grep tool-versions "${GITHUB_OUTPUT}" | sed s/tool-versions=// | jq -r '.python[0]')
+RUST_VERSION=$(grep tool-versions "${GITHUB_OUTPUT}" | sed s/tool-versions=// | jq -r '.rust[0]')
+
 docker buildx build --file "${MISE_PROJECT_ROOT}/Dockerfile" \
   --build-arg MORTENLJ_MISE_LIB_CLEAN_VERSION="${MORTENLJ_MISE_LIB_CLEAN_VERSION}" \
+  --build-arg PY_VERSION="${PY_VERSION}" \
+  --build-arg RUST_VERSION="${RUST_VERSION}" \
   --cache-from "${cache_from}" \
   --cache-to "${cache_to}" \
   --load \

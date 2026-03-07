@@ -11,6 +11,10 @@ on:
         description: Version to use for image tag (clean)
         required: true
         type: string
+      tool-versions:
+        description: JSON data with tool versions in use in this project
+        required: true
+        type: string
       main-branch:
         description: The ref of the main branch in this repo
         required: false
@@ -57,6 +61,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             MORTENLJ_MISE_LIB_CLEAN_VERSION=${{ inputs.clean-version }}
+            PY_VERSION=${{ fromJSON(inputs.tool-versions).python }}
+            RUST_VERSION=${{ fromJSON(inputs.tool-versions).rust }}
           tags: |
             ${{ inputs.main-image }}:${{ inputs.clean-version }}
             ${{ inputs.main-image }}:latest

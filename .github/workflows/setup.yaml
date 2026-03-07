@@ -9,6 +9,8 @@ on:
         value: ${{ jobs.setup.outputs.run-publish }}
       artifacts:
         value: ${{ jobs.setup.outputs.artifacts }}
+      tool-versions:
+        value: ${{ jobs.setup.outputs.tool-versions }}
       version:
         value: ${{ jobs.setup.outputs.version }}
       clean-version:
@@ -32,6 +34,7 @@ jobs:
       ci-tasks: ${{ steps.ci-info.outputs.ci-tasks }}
       run-publish: ${{ steps.ci-info.outputs.run-publish }}
       artifacts: ${{ steps.ci-info.outputs.artifacts }}
+      tool-versions: ${{ steps.ci-info.outputs.tool-versions }}
       version: ${{ steps.ci-info.outputs.version }}
       clean-version: ${{ steps.ci-info.outputs.clean-version }}
       release-build-tasks: ${{ steps.ci-info.outputs.release-build-tasks }}
