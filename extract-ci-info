@@ -111,13 +111,11 @@ class Output:
         return "\n".join(build_config.get("outputs", []))
 
     def tool_versions(self, mise_config):
-        tools = mise_config.get("tools", {})
+        tools = mise("ls", "--local")
         output = {}
         for tool in tools.keys():
             versions = tools.get(tool)
-            if not isinstance(versions, List):
-                continue
-            output[tool] = versions
+            output[tool] = sorted([v["requested_version"] for v in versions], reverse=True)
         return output
 
     def _version(self, mise_config, clean=False):
