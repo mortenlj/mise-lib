@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+# [MISE] depends=["docker:login"]
+# [MISE] description="Build project Dockerfile"
+
+set -o errexit
+set -o pipefail
+
+if [[ -n ${GITHUB_REPOSITORY} ]]; then
+  image_name=ghcr.io/${GITHUB_REPOSITORY}
+  cache_from=type=gha
+  cache_to=type=gha,mode=max
+else
+  image_name="ttl.sh/${USER}/$(basename "${MISE_PROJECT_ROOT}")"
+  cache_from=type=registry,ref=${image_name}/cache:1h
+  cache_to=type=registry,ref=${image_name}/cache:1h,mode=max
+fi
+tag_name="${image_name}:1h"
+
+docker buildx build --file "${MISE_PROJECT_ROOT}/Dockerfile" \
+  --build-arg MORTENLJ_MISE_LIB_CLEAN_VERSION="${MORTENLJ_MISE_LIB_CLEAN_VERSION}" \
+  --cache-from "${cache_from}" \
+  --cache-to "${cache_to}" \
+  --load \
+  --tag "${tag_name}" \
+  .
