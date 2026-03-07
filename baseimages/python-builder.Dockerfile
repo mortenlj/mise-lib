@@ -11,6 +11,9 @@ ONBUILD COPY pyproject.toml uv.lock ./
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
 	        uv sync --locked --no-install-project
 
+ONBUILD ARG MORTENLJ_MISE_LIB_CLEAN_VERSION=0.0.0+develop
+ONBUILD ENV UV_DYNAMIC_VERSIONING_BYPASS=${MORTENLJ_MISE_LIB_CLEAN_VERSION}
+
 # Load downstream sources and install project
 ONBUILD RUN --mount=type=cache,target=/root/.cache/uv \
             --mount=type=bind,target=/app,rw \

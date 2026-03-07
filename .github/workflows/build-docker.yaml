@@ -55,6 +55,8 @@ jobs:
           context: "."
           push: '${{ github.ref == inputs.main-branch }}'
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            MORTENLJ_MISE_LIB_CLEAN_VERSION=${{ inputs.clean-version }}
           tags: |
             ${{ inputs.main-image }}:${{ inputs.clean-version }}
             ${{ inputs.main-image }}:latest
