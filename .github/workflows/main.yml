@@ -7,7 +7,7 @@ concurrency:
 on:
   push:
     paths:
-      - baseimages
+      - baseimages/**
       - mise.toml
       - rust/setup
   workflow_dispatch:
