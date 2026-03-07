@@ -61,8 +61,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             MORTENLJ_MISE_LIB_CLEAN_VERSION=${{ inputs.clean-version }}
-            PY_VERSION=${{ fromJSON(inputs.tool-versions).python }}
-            RUST_VERSION=${{ fromJSON(inputs.tool-versions).rust }}
+            PY_VERSION=${{ fromJSON(inputs.tool-versions).python[0] }}
+            RUST_VERSION=${{ fromJSON(inputs.tool-versions).rust[0] }}
           tags: |
             ${{ inputs.main-image }}:${{ inputs.clean-version }}
             ${{ inputs.main-image }}:latest
