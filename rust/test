@@ -1,12 +1,13 @@
 #!/usr/bin/bash
 # [MISE] hide=true
 # [MISE] depends=["rust:setup"]
-# [MISE] env={RUSTFLAGS="-C target-feature=+crt-static"}
 
 set -o errexit
 set -o pipefail
 
+default_target=$(rustup show | grep "Default host" | awk '{ print $3 }')
+
 RUSTFLAGS="-C target-feature=+crt-static"
 export RUSTFLAGS
 
-cargo nextest run --no-tests warn
+cargo nextest run --target "${default_target}" --no-tests warn
