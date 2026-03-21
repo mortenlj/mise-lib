@@ -28,8 +28,10 @@ function install_if_needed {
 RUSTFLAGS="-C target-feature=+crt-static"
 export RUSTFLAGS
 
-install_if_needed arm-linux-gnueabihf-gcc gcc-arm-linux-gnueabihf
-install_if_needed aarch64-linux-gnu-gcc gcc-aarch64-linux-gnu
+install_if_needed clang
+install_if_needed lld
+install_if_needed arm-linux-gnueabihf-as crossbuild-essential-armhf
+install_if_needed aarch64-linux-gnu-as crossbuild-essential-arm64
 install_if_needed cmake
 install_if_needed musl-gcc musl-tools
 

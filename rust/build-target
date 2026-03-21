@@ -30,27 +30,32 @@ insert_version_target() {
 default_target=$(rustup show | grep "Default host" | awk '{ print $3 }')
 target="${usage_target:-${default_target}}"
 
+RUSTFLAGS="-C target-feature=+crt-static"
+
 # shellcheck disable=SC2154
 case ${target} in
   armv7-unknown-linux-gnueabihf)
-    CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER="$(command -v "arm-linux-gnueabihf-gcc")"
-    export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER
+    export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=clang
+    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=armv7-unknown-linux-gnueabihf -C link-arg=-fuse-ld=lld"
     ;;
   aarch64-unknown-linux-gnu)
-    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$(command -v "aarch64-linux-gnu-gcc")"
-    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER
+    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=clang
+    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=aarch64-unknown-linux-gnu -C link-arg=-fuse-ld=lld"
     ;;
   aarch64-unknown-linux-musl)
-    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER="$(command -v "aarch64-linux-gnu-gcc")"
-    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER
+    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=clang
+    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=aarch64-unknown-linux-musl -C link-arg=-fuse-ld=lld"
+    ;;
+  x86_64-unknown-linux-gnu)
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=clang
+    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=x86_64-unknown-linux-gnu -C link-arg=-fuse-ld=lld"
     ;;
   x86_64-unknown-linux-musl)
-    CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER="$(command -v "x86_64-linux-gnu-gcc")"
-    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=clang
+    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=x86_64-unknown-linux-musl -C link-arg=-fuse-ld=lld"
     ;;
 esac
 
-RUSTFLAGS="-C target-feature=+crt-static"
 export RUSTFLAGS
 
 # shellcheck disable=SC2086
