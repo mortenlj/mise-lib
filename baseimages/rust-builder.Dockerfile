@@ -21,6 +21,6 @@ ONBUILD RUN --mount=type=cache,target=/root/.cargo/registry \
             --mount=type=cache,target=/app/target \
 	        mise run release-build && \
             mkdir --parents /bin/{arm64,amd64,arm}/ && \
-            cp -v /app/target/release/${binary_name}.*.aarch64-unknown-linux-gnu /bin/arm64/${binary_name} && \
-            cp -v /app/target/release/${binary_name}.*.x86_64-unknown-linux-gnu /bin/amd64/${binary_name} && \
-            cp -v /app/target/release/${binary_name}.*.armv7-unknown-linux-gnueabihf /bin/arm/${binary_name}
+            cp -v /app/target/release/${binary_name}.*.aarch64-unknown-linux-musl /bin/arm64/${binary_name} && \
+            cp -v /app/target/release/${binary_name}.*.x86_64-unknown-linux-musl /bin/amd64/${binary_name} && \
+            cp -v /app/target/release/${binary_name}.*.armv7-unknown-linux-musleabihf /bin/arm/${binary_name}

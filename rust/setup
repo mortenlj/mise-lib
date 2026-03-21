@@ -30,13 +30,19 @@ export RUSTFLAGS
 
 install_if_needed clang
 install_if_needed lld
-install_if_needed arm-linux-gnueabihf-as crossbuild-essential-armhf
-install_if_needed aarch64-linux-gnu-as crossbuild-essential-arm64
 install_if_needed cmake
 install_if_needed musl-gcc musl-tools
 
+# Download musl.cc cross-compilation sysroots
+if [[ ! -d /opt/aarch64-linux-musl-cross ]]; then
+  curl -fsSL https://musl.cc/aarch64-linux-musl-cross.tgz | ${SUDO} tar xz -C /opt/
+fi
+if [[ ! -d /opt/armv7l-linux-musleabihf-cross ]]; then
+  curl -fsSL https://musl.cc/armv7l-linux-musleabihf-cross.tgz | ${SUDO} tar xz -C /opt/
+fi
+
 rustup update
-rustup target add armv7-unknown-linux-gnueabihf x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu x86_64-unknown-linux-musl aarch64-unknown-linux-musl
+rustup target add armv7-unknown-linux-musleabihf x86_64-unknown-linux-musl aarch64-unknown-linux-musl
 rustup component add clippy
 rustup component add rustfmt
 cargo binstall --no-confirm --no-cleanup cargo-nextest
