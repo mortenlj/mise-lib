@@ -28,18 +28,7 @@ function install_if_needed {
 RUSTFLAGS="-C target-feature=+crt-static"
 export RUSTFLAGS
 
-install_if_needed clang
-install_if_needed lld
-install_if_needed cmake
-install_if_needed musl-gcc musl-tools
-
-# Download musl.cc cross-compilation sysroots
-if [[ ! -d /opt/aarch64-linux-musl-cross ]]; then
-  curl -fsSL https://musl.cc/aarch64-linux-musl-cross.tgz | ${SUDO} tar xz -C /opt/
-fi
-if [[ ! -d /opt/armv7l-linux-musleabihf-cross ]]; then
-  curl -fsSL https://musl.cc/armv7l-linux-musleabihf-cross.tgz | ${SUDO} tar xz -C /opt/
-fi
+install_if_needed zig
 
 rustup update
 rustup target add armv7-unknown-linux-musleabihf x86_64-unknown-linux-musl aarch64-unknown-linux-musl
@@ -47,3 +36,4 @@ rustup component add clippy
 rustup component add rustfmt
 cargo binstall --no-confirm --no-cleanup cargo-nextest
 cargo binstall --no-confirm --no-cleanup cargo-chef
+cargo binstall --no-confirm --no-cleanup cargo-zigbuild

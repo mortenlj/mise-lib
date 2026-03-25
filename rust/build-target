@@ -31,37 +31,10 @@ default_target="x86_64-unknown-linux-musl"
 target="${usage_target:-${default_target}}"
 
 RUSTFLAGS="-C target-feature=+crt-static"
-
-# shellcheck disable=SC2154
-case ${target} in
-  armv7-unknown-linux-musleabihf)
-    export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_MUSLEABIHF_LINKER=clang
-    export CC_armv7_unknown_linux_musleabihf=clang
-    export CXX_armv7_unknown_linux_musleabihf=clang++
-    export CFLAGS_armv7_unknown_linux_musleabihf="--target=armv7-unknown-linux-musleabihf --sysroot=/opt/armv7l-linux-musleabihf-cross/armv7l-linux-musleabihf -L/opt/armv7l-linux-musleabihf-cross/lib/gcc/armv7l-linux-musleabihf/11.2.1 -B/opt/armv7l-linux-musleabihf-cross/lib/gcc/armv7l-linux-musleabihf/11.2.1 -fuse-ld=lld -Wno-unused-command-line-argument"
-    export CXXFLAGS_armv7_unknown_linux_musleabihf="--target=armv7-unknown-linux-musleabihf --sysroot=/opt/armv7l-linux-musleabihf-cross/armv7l-linux-musleabihf -L/opt/armv7l-linux-musleabihf-cross/lib/gcc/armv7l-linux-musleabihf/11.2.1 -B/opt/armv7l-linux-musleabihf-cross/lib/gcc/armv7l-linux-musleabihf/11.2.1 -fuse-ld=lld -Wno-unused-command-line-argument"
-    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=armv7-unknown-linux-musleabihf -C link-arg=--sysroot=/opt/armv7l-linux-musleabihf-cross/armv7l-linux-musleabihf -C link-arg=-L/opt/armv7l-linux-musleabihf-cross/lib/gcc/armv7l-linux-musleabihf/11.2.1 -C link-arg=-fuse-ld=lld"
-    ;;
-  aarch64-unknown-linux-musl)
-    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=clang
-    export CC_aarch64_unknown_linux_musl=clang
-    export CXX_aarch64_unknown_linux_musl=clang++
-    export CFLAGS_aarch64_unknown_linux_musl="--target=aarch64-unknown-linux-musl --sysroot=/opt/aarch64-linux-musl-cross/aarch64-linux-musl -L/opt/aarch64-linux-musl-cross/lib/gcc/aarch64-linux-musl/11.2.1 -B/opt/aarch64-linux-musl-cross/lib/gcc/aarch64-linux-musl/11.2.1 -fuse-ld=lld -Wno-unused-command-line-argument"
-    export CXXFLAGS_aarch64_unknown_linux_musl="--target=aarch64-unknown-linux-musl --sysroot=/opt/aarch64-linux-musl-cross/aarch64-linux-musl -L/opt/aarch64-linux-musl-cross/lib/gcc/aarch64-linux-musl/11.2.1 -B/opt/aarch64-linux-musl-cross/lib/gcc/aarch64-linux-musl/11.2.1 -fuse-ld=lld -Wno-unused-command-line-argument"
-    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=aarch64-unknown-linux-musl -C link-arg=--sysroot=/opt/aarch64-linux-musl-cross/aarch64-linux-musl -C link-arg=-L/opt/aarch64-linux-musl-cross/lib/gcc/aarch64-linux-musl/11.2.1 -C link-arg=-fuse-ld=lld"
-    ;;
-  x86_64-unknown-linux-musl)
-    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=clang
-    export CC_x86_64_unknown_linux_musl=clang
-    export CFLAGS_x86_64_unknown_linux_musl="--target=x86_64-unknown-linux-musl -isystem /usr/include/x86_64-linux-musl"
-    RUSTFLAGS="${RUSTFLAGS} -C link-arg=--target=x86_64-unknown-linux-musl -C link-arg=-fuse-ld=lld"
-    ;;
-esac
-
 export RUSTFLAGS
 
 # shellcheck disable=SC2086
-cargo build --target ${target} ${usage_release:+--release}
+cargo zigbuild --target ${target} ${usage_release:+--release}
 
 if [[ "${usage_release}" == "true" ]]; then
   profile="release"
