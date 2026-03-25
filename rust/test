@@ -5,9 +5,4 @@
 set -o errexit
 set -o pipefail
 
-default_target="x86_64-unknown-linux-musl"
-
-RUSTFLAGS="-C target-feature=+crt-static"
-export RUSTFLAGS
-
-cargo nextest run --target "${default_target}" --no-tests warn
+cargo nextest run --no-tests warn
