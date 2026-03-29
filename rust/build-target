@@ -32,16 +32,21 @@ insert_version_target() {
 default_target="x86_64-unknown-linux-musl"
 target="${usage_target:-${default_target}}"
 
+echo "Starting zigbuild"
 # shellcheck disable=SC2086
 cargo zigbuild --target ${target} ${usage_release:+--release}
 
+echo "Selecting profile"
 if [[ "${usage_release}" == "true" ]]; then
   profile="release"
 else
   profile="debug"
 fi
 
+echo "Profile ${profile} selected"
+
 if [[ "${target}" != "" ]]; then
+  echo "Extracting artifacts for ${target}"
   for f in "target/${target}/${profile}/"*; do
     if [[ -x "${f}" && -f "${f}" ]]; then
       new_name="target/${profile}/$(insert_version_target "$(basename "${f}")" "${MORTENLJ_MISE_LIB_VERSION:-0.0}" "${target}")"
