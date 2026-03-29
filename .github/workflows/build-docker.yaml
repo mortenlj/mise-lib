@@ -20,6 +20,11 @@ on:
         required: false
         type: string
         default: refs/heads/main
+      manifests-task:
+        description: The task used to generate manifests
+        required: false
+        type: string
+        default: k8s:manifests
     secrets:
       GHCR_PASSWORD:
         required: true
@@ -67,11 +72,11 @@ jobs:
             ${{ inputs.main-image }}:${{ inputs.clean-version }}
             ${{ inputs.main-image }}:latest
       - name: Assemble manifests
-        run: mise run k8s:manifests "${{ inputs.main-image }}"
+        run: mise run "${{ inputs.manifests-task }}" "${{ inputs.main-image }}"
         env:
           MORTENLJ_MISE_LIB_CLEAN_VERSION: ${{ inputs.clean-version }}
       - name: Save manifests for later deploy
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: manifests
-          path: mise-output/deploy.yaml
+          path: mise-output/*.yaml
