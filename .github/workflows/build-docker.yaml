@@ -42,14 +42,14 @@ jobs:
       - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
       - name: Set up QEMU
         id: qemu
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4
       - name: Login to GitHub Packages Docker Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -59,7 +59,7 @@ jobs:
           fetch-depth: 0
           submodules: "true"
       - name: Build and possibly push docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7
         with:
           context: "."
           push: '${{ github.ref == inputs.main-branch }}'
@@ -76,7 +76,7 @@ jobs:
         env:
           MORTENLJ_MISE_LIB_CLEAN_VERSION: ${{ inputs.clean-version }}
       - name: Save manifests for later deploy
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: manifests
           path: mise-output/*.yaml
