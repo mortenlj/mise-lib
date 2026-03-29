@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: "true"
-      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
       - run: mise run extract-ci-info
         id: ci-info
     outputs:
