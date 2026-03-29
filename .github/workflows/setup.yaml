@@ -17,6 +17,8 @@ on:
         value: ${{ jobs.setup.outputs.clean-version }}
       release-build-tasks:
         value: ${{ jobs.setup.outputs.release-build-tasks }}
+      manifests-task:
+        value: ${{ jobs.setup.outputs.manifests-task }}
 
 
 jobs:
@@ -38,3 +40,4 @@ jobs:
       version: ${{ steps.ci-info.outputs.version }}
       clean-version: ${{ steps.ci-info.outputs.clean-version }}
       release-build-tasks: ${{ steps.ci-info.outputs.release-build-tasks }}
+      manifests-task: ${{ steps.ci-info.outputs.manifests-task }}

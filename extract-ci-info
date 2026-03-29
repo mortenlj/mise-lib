@@ -49,6 +49,13 @@ class Output:
             self._fobj.write(line)
             LOG.info(line.strip())
 
+    def manifests_task(self, mise_config):
+        try:
+            LOG.debug("Repository has explicit manifests task: %r", mise_config["tasks"]["manifests"])
+            return "manifests"
+        except KeyError:
+            return "k8s:manifests"
+
     def _task_dependencies(self, task_name) -> Set[Task]:
         task_info = mise("tasks", "info", task_name)
         if task_info["run"] or task_info["file"]:
