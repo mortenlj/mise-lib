@@ -30,5 +30,6 @@ docker buildx build --file "${MISE_PROJECT_ROOT}/Dockerfile" \
   --cache-from "${cache_from}" \
   --cache-to "${cache_to}" \
   --load \
+  --progress plain \
   --tag "${tag_name}" \
   .
