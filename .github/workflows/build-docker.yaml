@@ -39,7 +39,7 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
       - name: Set up QEMU
         id: qemu
         uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4
