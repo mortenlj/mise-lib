@@ -28,8 +28,6 @@ on:
     secrets:
       GHCR_PASSWORD:
         required: true
-      GITHUB_TOKEN:
-        required: false
 
 
 jobs:
