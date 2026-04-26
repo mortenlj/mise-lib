@@ -28,6 +28,8 @@ on:
     secrets:
       GHCR_PASSWORD:
         required: true
+      GITHUB_TOKEN:
+        required: false
 
 
 jobs:
@@ -64,6 +66,7 @@ jobs:
           context: "."
           push: '${{ github.ref == inputs.main-branch }}'
           platforms: linux/amd64,linux/arm64
+          secrets: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           build-args: |
             MORTENLJ_MISE_LIB_CLEAN_VERSION=${{ inputs.clean-version }}
             PY_VERSION=${{ fromJSON(inputs.tool-versions).python[0] }}
