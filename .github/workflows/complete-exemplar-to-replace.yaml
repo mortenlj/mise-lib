@@ -1,8 +1,8 @@
 name: example workflow to recreate
 
-#on:
+on:
+  workflow_dispatch:
 #  push:
-#  workflow_dispatch:
 
 env:
   main_image: ghcr.io/${{ github.repository }}
