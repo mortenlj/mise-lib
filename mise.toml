@@ -6,7 +6,7 @@ ruff = "latest"
 "cargo-binstall"="latest"
 
 [task_config]
-includes = ["./virtual_tasks.toml", "./"]
+includes = ["./virtual_tasks.toml", "./tasks"]
 
 [tasks.test]
 description = "Run tests"
