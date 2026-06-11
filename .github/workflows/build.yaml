@@ -1,0 +1,50 @@
+name: build docker
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version to use for image tag (clean)
+        required: true
+        type: string
+      clean-version:
+        description: Version to use for image tag (clean)
+        required: true
+        type: string
+      release-build-tasks:
+        description: JSON data with tool versions in use in this project
+        required: true
+        type: string
+      artifacts:
+        description: Artifacts produced by the release-build tasks
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      checks: write
+      pull-requests: write
+    strategy:
+      matrix:
+        task: ${{ fromJSON(inputs.release-build-tasks) }}
+    steps:
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+          submodules: "true"
+      - run: mise run release-build
+        env:
+          MORTENLJ_MISE_LIB_VERSION: ${{ inputs.version }}
+          MORTENLJ_MISE_LIB_CLEAN_VERSION: ${{ inputs.clean-version }}
+      - name: Save artifacts for release
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: artifacts-${{ matrix.task.name }}
+          path: |
+            ${{ fromJSON(inputs.artifacts) }}
+          if-no-files-found: error
