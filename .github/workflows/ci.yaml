@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       ci-tasks:
-        description: JSON data with tool versions in use in this project
+        description: JSON data with ci tasks in use in this project
         required: true
         type: string
 
