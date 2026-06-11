@@ -2,9 +2,8 @@
 # [MISE] hide=true
 # [MISE] depends=["rust:setup"]
 # [MISE] tools={"cargo-binstall"="latest","cargo:cargo-zigbuild"="latest", "zig"="latest"}
-# [MISE] env={RUSTFLAGS="-C target-feature=+crt-static"}
 # [USAGE] arg "[target]" help="Target triple" {
-# [USAGE]   choices "armv7-unknown-linux-musleabihf" "x86_64-unknown-linux-musl" "aarch64-unknown-linux-musl"
+# [USAGE]   choices "armv7-unknown-linux-musleabihf" "x86_64-unknown-linux-musl" "aarch64-unknown-linux-musl" "x86_64-unknown-linux-gnu"
 # [USAGE] }
 # [USAGE] flag "--release" help="Build release mode"
 
@@ -32,7 +31,12 @@ insert_version_target() {
 default_target="x86_64-unknown-linux-musl"
 target="${usage_target:-${default_target}}"
 
-echo "Starting zigbuild"
+if [[ ${target} == *musl* ]]; then
+  RUSTFLAGS="-C target-feature=+crt-static"
+  export RUSTFLAGS
+fi
+
+echo "Starting zigbuild for target '${target}'"
 # shellcheck disable=SC2086
 cargo zigbuild --target ${target} ${usage_release:+--release}
 
