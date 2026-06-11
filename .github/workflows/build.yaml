@@ -24,10 +24,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      checks: write
-      pull-requests: write
     strategy:
       matrix:
         task: ${{ fromJSON(inputs.release-build-tasks) }}
