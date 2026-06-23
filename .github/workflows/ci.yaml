@@ -12,8 +12,6 @@ jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       matrix:
         task: ${{ fromJSON(inputs.ci-tasks) }}
