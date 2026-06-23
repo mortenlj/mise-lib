@@ -34,10 +34,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      checks: write
-      pull-requests: write
     steps:
       - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
       - name: Set up QEMU
