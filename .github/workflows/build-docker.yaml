@@ -40,6 +40,8 @@ jobs:
       pull-requests: write
     steps:
       - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+        with:
+          cache: false
       - name: Set up QEMU
         id: qemu
         uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
@@ -58,6 +60,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: "true"
+          persist-credentials: false
       - name: Build and possibly push docker image
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
@@ -73,9 +76,11 @@ jobs:
             ${{ inputs.main-image }}:${{ inputs.clean-version }}
             ${{ inputs.main-image }}:latest
       - name: Assemble manifests
-        run: mise run "${{ inputs.manifests-task }}" "${{ inputs.main-image }}"
+        run: mise run "${INPUTS_MANIFESTS_TASK}" "${INPUTS_MAIN_IMAGE}"
         env:
           MORTENLJ_MISE_LIB_CLEAN_VERSION: ${{ inputs.clean-version }}
+          INPUTS_MANIFESTS_TASK: ${{ inputs.manifests-task }}
+          INPUTS_MAIN_IMAGE: ${{ inputs.main-image }}
       - name: Save manifests for later deploy
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

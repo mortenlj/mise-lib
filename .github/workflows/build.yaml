@@ -33,6 +33,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: "true"
+          persist-credentials: false
       - run: mise run release-build
         env:
           MORTENLJ_MISE_LIB_VERSION: ${{ inputs.version }}

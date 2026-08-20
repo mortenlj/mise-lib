@@ -4,6 +4,7 @@ uv = "latest"
 ruff = "latest"
 "pipx:jinja2-cli"="latest"
 "cargo-binstall"="latest"
+zizmor = "latest"
 
 [task_config]
 includes = ["./virtual_tasks.toml", "./tasks"]

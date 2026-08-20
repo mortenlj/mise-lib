@@ -21,4 +21,5 @@ jobs:
         with:
           fetch-depth: 0
           submodules: "true"
+          persist-credentials: false
       - run: mise run ${{ matrix.task.cmd }}
