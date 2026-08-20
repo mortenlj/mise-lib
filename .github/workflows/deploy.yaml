@@ -29,23 +29,23 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
       - name: Get kubeconfig
-        uses: mortenlj/kube-actions/get-kubeconfig@main
+        uses: mortenlj/kube-actions/get-kubeconfig@980ec9f7afeed7b081cf7d882f565a4c05285132 # main
       - name: Download manifests from build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: manifests
       - id: join-zt
         name: Join ZeroTier network
-        uses: mortenlj/zerotier-actions/join-zt@main
+        uses: mortenlj/zerotier-actions/join-zt@f1431b4917caae4823b8c53b15dbd53785626931 # main
         with:
           network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
           api_accesstoken: ${{ secrets.ZEROTIER_API_ACCESSTOKEN }}
           ping_target: ${{ inputs.ping-target }}
       - name: Run kubectl apply
-        uses: mortenlj/kube-actions/apply-manifest@main
+        uses: mortenlj/kube-actions/apply-manifest@980ec9f7afeed7b081cf7d882f565a4c05285132 # main
       - name: Leave ZeroTier network
         if: always()
-        uses: mortenlj/zerotier-actions/leave-zt@main
+        uses: mortenlj/zerotier-actions/leave-zt@f1431b4917caae4823b8c53b15dbd53785626931 # main
         with:
           node_id: ${{ steps.join-zt.outputs.node_id }}
           network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
