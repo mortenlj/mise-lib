@@ -13,6 +13,10 @@ on:
         required: false
         type: string
         default: k3s.home.ibidem.no
+      namespace:
+        description: Namespace to deploy to if not `default`
+        required: false
+        type: string
     secrets:
       ZEROTIER_NETWORK_ID:
         required: true
@@ -43,6 +47,8 @@ jobs:
           ping_target: ${{ inputs.ping-target }}
       - name: Run kubectl apply
         uses: mortenlj/kube-actions/apply-manifest@980ec9f7afeed7b081cf7d882f565a4c05285132 # main
+        with:
+          namespace: ${{ inputs.namespace }}
       - name: Leave ZeroTier network
         if: always()
         uses: mortenlj/zerotier-actions/leave-zt@f1431b4917caae4823b8c53b15dbd53785626931 # main
