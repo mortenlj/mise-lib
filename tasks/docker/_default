@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-# [MISE] depends=["docker:login"]
 # [MISE] description="Build project Dockerfile"
 
 set -o errexit
