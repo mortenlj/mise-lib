@@ -9,11 +9,3 @@ depends = [
     "rust:build-target --release x86_64-unknown-linux-musl",
     "rust:build-target --release aarch64-unknown-linux-musl",
 ]
-
-["docker:build"]
-description = "Perform build task inside docker container"
-depends = ["docker:run-task build"]
-
-["docker:release-build"]
-description = "Perform release-build task inside docker container"
-depends = ["docker:run-task release-build"]
