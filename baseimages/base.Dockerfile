@@ -1,4 +1,4 @@
-FROM jdxcode/mise:latest
+FROM ghcr.io/jdx/mise:debian
 WORKDIR /app
 
 # Pre-install lots of tools
