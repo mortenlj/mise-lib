@@ -42,7 +42,13 @@ depends = [
     "build-image rust",
 ]
 
+[tasks.build-base]
+run = "docker buildx build --load -f baseimages/base.Dockerfile -t ghcr.io/mortenlj/mise-lib/base:latest ."
+
 [tasks.build-image]
+depends = [
+    "build-base"
+]
 usage = '''
 arg "<image>" help="Image to build"
 '''
