@@ -207,16 +207,35 @@ jobs:
           - rust
           - python-base
           - python-builder
-          - python-3.11
-          - python-3.12
-          - python-3.13
-          - python-3.14
     steps:
       - name: Cleanup main images
         uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: mise-lib/${{ matrix.image }}
+          keep-n-tagged: 5
+          older-than: 4 weeks
+          delete-untagged: true
+          delete-ghost-images: true
+          delete-orphaned-images: true
+          delete-partial-images: true
+
+  cleanup-python:
+    name: Cleanup
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        py_version: ${{ fromJSON(needs.setup.outputs.tool-versions).python }}
+    steps:
+      - name: Cleanup main images
+        uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: mise-lib/python-${{ matrix.py_version }}
           keep-n-tagged: 5
           older-than: 4 weeks
           delete-untagged: true
