@@ -224,7 +224,9 @@ jobs:
     name: Cleanup
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: build
+    needs: 
+      - build-python
+      - setup
     permissions:
       packages: write
     strategy:
